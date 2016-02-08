@@ -1,7 +1,6 @@
 CREATE TABLE professor (
     SSN CHAR(11) NOT NULL,
     name TEXT,
-    hired_year INTEGER,
     PRIMARY KEY (SSN)
 );
 
@@ -27,12 +26,13 @@ CREATE TABLE department (
 );
 
 CREATE TABLE course (
-    department_name TEXT NOT NULL UNIQUE,
+    department_name TEXT NOT NULL,
     num TEXT NOT NULL,
     name TEXT NOT NULL,
     capacity INTEGER,
-    PRIMARY KEY (department_name, num, name),
-    FOREIGN KEY (department_name) REFERENCES department (name)
+    PRIMARY KEY (department_name, num),
+    FOREIGN KEY (department_name)
+        REFERENCES department (name)
         ON DELETE CASCADE
 );
 
@@ -46,37 +46,37 @@ CREATE TABLE affiliate (
     prof_SSN CHAR(11) NOT NULL,
     dept_name TEXT NOT NULL,
     PRIMARY KEY (prof_SSN, dept_name),
-    FOREIGN KEY (prof_SSN) REFERENCES professor (SSN),
-    FOREIGN KEY (dept_name) REFERENCES department (name)
+    FOREIGN KEY (prof_SSN)
+        REFERENCES professor (SSN),
+    FOREIGN KEY (dept_name)
+        REFERENCES department (name)
 );
 
 CREATE TABLE offer (
     term_semester TEXT NOT NULL,
     term_year INTEGER NOT NULL,
     course_dept TEXT NOT NULL,
-    course_name TEXT NOT NULL,
     course_num INTEGER NOT NULL,
     PRIMARY KEY (term_semester, term_year,
         course_dept, course_num, course_name),
     FOREIGN KEY (term_semester, term_year)
         REFERENCES term (semester, year),
-    FOREIGN KEY (course_dept, course_num, course_name)
-        REFERENCES course (department_name, num, name)
+    FOREIGN KEY (course_dept, course_num)
+        REFERENCES course (department_name, num)
 );
 
 CREATE TABLE teach (
     offer_semester TEXT NOT NULL,
     offer_year INTEGER NOT NULL,
     offer_dept TEXT NOT NULL,
-    offer_name TEXT NOT NULL,
     offer_num INTEGER NOT NULL,
     teacher_SSN CHAR(11),
-    PRIMARY KEY (teacher_SSN, offer_semester,
-        offer_year, offer_dept, offer_name, offer_num),
+    PRIMARY KEY (teacher_SSN,
+        offer_semester, offer_year, offer_dept, offer_num),
     FOREIGN KEY (teacher_SSN)
         REFERENCES professor (SSN),
     FOREIGN KEY (offer_semester, offer_year,
         offer_dept, offer_name, offer_num)
         REFERENCES offer (term_semester, term_year,
-            course_dept, course_name, course_num)
+            course_dept, course_num)
 );
